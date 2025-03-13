@@ -130,6 +130,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.pytorch_learning/
 env/
 venv/
 ENV/
