@@ -45,14 +45,14 @@ def get_dataloaders(
         dataset=train_data,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=os.cpu_count()
+        num_workers=num_workers
     )
 
     test_dataloader = DataLoader(
         dataset=test_data,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=os.cpu_count()
+        num_workers=num_workers
     )
 
     # Return the dataloaders
