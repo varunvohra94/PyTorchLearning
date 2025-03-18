@@ -35,14 +35,14 @@ def train_step(
     model.train()
     model.to(device)
 
-    train_loss, train_acc = 0
-    for X, y in dataloader:
+    train_loss, train_acc = 0, 0
+    for _, (X, y) in enumerate(dataloader):
         # Send data to the right device
         X, y = X.to(device), y.to(device)
 
         # 1. forward Pass
         y_logits = model(X)
-        y_preds = torch.argmax(torch.softmax(X, dim=1), dim=1)
+        y_preds = torch.argmax(torch.softmax(y_logits, dim=1), dim=1)
 
         # 2. Calculate the loss and accuracy
         loss = loss_fn(y_logits, y)
@@ -75,7 +75,7 @@ def test_step(
     test_loss, test_acc = 0, 0
 
     with torch.inference_mode():
-        for X, y in dataloader:
+        for _, (X, y) in enumerate(dataloader):
             X, y = X.to(device), y.to(device)
 
             # Calculate the logits and predictions
@@ -138,7 +138,7 @@ def train(
         "train_loss": [],
         "train_acc": [],
         "test_loss": [],
-        "test_loss": []
+        "test_acc": []
     }
 
     for epoch in tqdm(range(epochs)):
