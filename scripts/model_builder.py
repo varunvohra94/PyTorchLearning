@@ -12,7 +12,7 @@ class TinyVGG(nn.Module):
         hidden_units: An integer indicating number of hidden units between layers.
         output_shape: An integer indicating number of output units.
   """
-    def _init__(
+    def __init__(
             self,
             input_shape: int,
             hidden_units: int,
