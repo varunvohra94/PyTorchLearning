@@ -8,7 +8,7 @@ import argparse
 import torch
 from torchvision import transforms
 
-import data_detup, engine, model_builder, utils
+import data_setup, engine, model_builder, utils
 
 if __name__=="__main__":
     
@@ -47,18 +47,66 @@ if __name__=="__main__":
     # Setup device agnostic mode
     if args.device:
         assert args.device == "cpu" or args.device == "mps" or args.device == "cuda", "Device must be either 'cpu', 'cuda', or 'mps'"
-        device = args.device
+        DEVICE = args.device
     elif torch.cuda.is_available():
-        device = "cuda"
+        DEVICE = "cuda"
     elif torch.mps.is_available():
-        device = "mps"
+        DEVICE = "mps"
     else:
-        device = "cpu"
+        DEVICE = "cpu"
     
+    print(f"Using device: {DEVICE}")
+
     # Setup Hyperparameters
     EPOCHS = args.epochs
     BATCH_SIZE = args.batch_size
     LEARNING_RATE = args.lr
     HIDDEN_UNITS = args.hidden_units
 
-    
+    # Setup data directories
+    train_dir = "~/Documents/Code/PyTorchLearning/data/pizza_steak_sushi/train"
+    test_dir = "~/Documents/Code/PyTorchLearning/data/pizza_steak_sushi/test"
+
+    # Create a data transform to transform the data
+    data_transform = transforms.Compose([
+        transforms.Resize((64,64)),
+        transforms.ToTensor()
+    ])
+
+    # Create dataloaders with help from data_setup
+    train_dataloader, test_dataloader, class_names = data_setup.get_dataloaders(
+        train_dir=train_dir,
+        test_dir=test_dir,
+        transform=data_transform,
+        batch_size=BATCH_SIZE,
+    )
+
+    # Create model with the help of 
+    model = model_builder.TinyVGG(
+        input_shape=3,
+        hidden_units=HIDDEN_UNITS,
+        output_shape=len(class_names)
+    )
+
+    # Set loss and optimizer
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(
+        params=model.parameters(),
+        lr=LEARNING_RATE
+    )
+
+    results = engine.train(
+        model=model,
+        loss_fn=loss_fn,
+        optimizer=optimizer,
+        train_dataloader=train_dataloader,
+        test_dataloader=test_dataloader,
+        device=DEVICE,
+        epochs=EPOCHS
+    )
+
+    utils.save_model(
+        model=model,
+        target_dir="~/Documents/Code/PyTorchLearning/models/",
+        model_name="TinyVGG.pth"
+    )
