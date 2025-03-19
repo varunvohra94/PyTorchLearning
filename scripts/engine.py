@@ -32,8 +32,9 @@ def train_step(
     """
 
     # Put the model in train mode
-    model.train()
     model.to(device)
+    model.train()
+    
 
     train_loss, train_acc = 0, 0
     for _, (X, y) in enumerate(dataloader):
