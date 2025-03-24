@@ -174,9 +174,10 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Data and Model Folders
+# Data and Model and Experiments
 data/
 models/
+runs/
 
 # MAC
 .DS_STORE
